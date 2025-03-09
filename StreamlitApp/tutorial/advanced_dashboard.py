@@ -45,7 +45,7 @@ if uploaded_file is not None:
     st.sidebar.header(body="Dashboard Controls")
 
     # Date range filter if date column exists
-    date_columns = df.select_dtypes(include=["datetime64"]).columns
+    date_columns: pd.Index[str] = df.select_dtypes(include=["datetime64"]).columns
     if len(date_columns) > 0 or "Date" in df.columns:
         if "Date" in df.columns:
             df["Date"] = pd.to_datetime(arg=df["Date"])
@@ -73,6 +73,8 @@ if uploaded_file is not None:
 
     with col1:
         st.subheader("📈 Data Overview")
+        index_range: pd.RangeIndex = pd.RangeIndex(start=1, stop=len(df) + 1, step=1)
+        df.index = index_range
         st.dataframe(df, use_container_width=True)
 
         st.subheader("📊 Quick Statistics")
