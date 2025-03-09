@@ -1,0 +1,250 @@
+/* 1. Main Container */
+.stApp {
+    background-color: #ffffff;
+    padding: 1rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* 2. Text Elements */
+.stMarkdown {
+    font-family: 'Arial', sans-serif;
+    line-height: 1.6;
+}
+
+h1 {  /* st.title() */
+    color: #0f2b46;
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+h2 {  /* st.header() */
+    color: #1a4971;
+    font-size: 2rem;
+}
+
+h3 {  /* st.subheader() */
+    color: #2c5282;
+    font-size: 1.5rem;
+}
+
+.stCodeBlock {  /* st.code() */
+    background-color: #f6f8fa;
+    padding: 1rem;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+}
+
+.stCaption {  /* st.caption() */
+    color: #718096;
+    font-size: 0.875rem;
+}
+
+/* 3. Input Widgets */
+.stTextInput input {  /* st.text_input() */
+    border: 2px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 0.5rem;
+    width: 100%;
+}
+
+.stTextInput input:focus {
+    border-color: #4299e1;
+    box-shadow: 0 0 0 1px #4299e1;
+}
+
+.stNumberInput input {  /* st.number_input() */
+    border: 2px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 0.5rem;
+}
+
+.stTextArea textarea {  /* st.text_area() */
+    border: 2px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 0.5rem;
+    min-height: 100px;
+}
+
+.stDateInput input {  /* st.date_input() */
+    border: 2px solid #e2e8f0;
+    border-radius: 5px;
+    padding: 0.5rem;
+}
+
+.stFileUploader {  /* st.file_uploader() */
+    border: 2px dashed #e2e8f0;
+    border-radius: 5px;
+    padding: 1rem;
+}
+
+.stColorPicker {  /* st.color_picker() */
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+/* 4. Button Elements */
+.stButton button {  /* st.button() */
+    background-color: #4299e1;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.stButton button:hover {
+    background-color: #2b6cb0;
+    transform: translateY(-1px);
+}
+
+.stDownloadButton button {  /* st.download_button() */
+    background-color: #48bb78;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+}
+
+.stCheckbox {  /* st.checkbox() */
+    margin: 0.5rem 0;
+}
+
+.stRadio {  /* st.radio() */
+    margin: 0.5rem 0;
+}
+
+.stSelectbox {  /* st.selectbox() */
+    border: 2px solid #e2e8f0;
+    border-radius: 5px;
+}
+
+.stMultiSelect {  /* st.multiselect() */
+    border: 2px solid #e2e8f0;
+    border-radius: 5px;
+}
+
+/* 5. Layout Elements */
+.stSidebar {  /* st.sidebar */
+    background-color: #f7fafc;
+    padding: 2rem 1rem;
+    border-right: 1px solid #e2e8f0;
+}
+
+.stColumns {  /* st.columns() */
+    gap: 1rem;
+}
+
+.stExpander {  /* st.expander() */
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    margin: 0.5rem 0;
+}
+
+.stContainer {  /* st.container() */
+    padding: 1rem;
+    margin: 1rem 0;
+}
+
+.stTabs {  /* st.tabs() */
+    margin: 1rem 0;
+}
+
+.stTab {
+    padding: 0.5rem 1rem;
+    border-bottom: 2px solid transparent;
+}
+
+.stTab[data-active="true"] {
+    border-bottom-color: #4299e1;
+}
+
+/* 6. Media Elements */
+.stImage {  /* st.image() */
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.stVideo {  /* st.video() */
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.stAudio {  /* st.audio() */
+    width: 100%;
+    margin: 1rem 0;
+}
+
+/* 7. Data Display */
+.stDataFrame {  /* st.dataframe() */
+    border: 1px solid #e2e8f0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.stTable {  /* st.table() */
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.stTable th, .stTable td {
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem;
+}
+
+.stMetric {  /* st.metric() */
+    background-color: white;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.stJson {  /* st.json() */
+    background-color: #f6f8fa;
+    padding: 1rem;
+    border-radius: 5px;
+    font-family: 'Courier New', monospace;
+}
+
+/* 8. Status Elements */
+.stAlert {  /* Base for all alerts */
+    padding: 1rem;
+    border-radius: 5px;
+    margin: 1rem 0;
+}
+
+.stError {  /* st.error() */
+    background-color: #fff5f5;
+    border: 1px solid #fc8181;
+    color: #c53030;
+}
+
+.stWarning {  /* st.warning() */
+    background-color: #fffaf0;
+    border: 1px solid #fbd38d;
+    color: #c05621;
+}
+
+.stInfo {  /* st.info() */
+    background-color: #ebf8ff;
+    border: 1px solid #63b3ed;
+    color: #2b6cb0;
+}
+
+.stSuccess {  /* st.success() */
+    background-color: #f0fff4;
+    border: 1px solid #68d391;
+    color: #2f855a;
+}
+
+.stProgress {  /* st.progress() */
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: #e2e8f0;
+}
+
+.stProgress > div {
+    background-color: #4299e1;
+    border-radius: 9999px;
+}
