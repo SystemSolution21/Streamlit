@@ -1,4 +1,4 @@
-from typing import Any, Union, Tuple, Literal
+from typing import Any, Union, Tuple
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 from datetime import date, datetime
 import numpy as np
 from streamlit.runtime.uploaded_file_manager import UploadedFile
+from streamlit.delta_generator import DeltaGenerator
 
 
 # Set page config
@@ -45,23 +46,27 @@ if uploaded_file is not None:
     st.sidebar.header(body="Dashboard Controls")
 
     # Date range filter if date column exists
-    date_columns: pd.Index[str] = df.select_dtypes(include=["datetime64"]).columns
+    date_columns: pd.Index = df.select_dtypes(include=["datetime64"]).columns
+
     if len(date_columns) > 0 or "Date" in df.columns:
+        # Select Date Columns
         if "Date" in df.columns:
-            df["Date"] = pd.to_datetime(arg=df["Date"])
+            df["Date"] = pd.to_datetime(arg=df["Date"])  # 2023-01-01
             date_col: str | None = st.sidebar.selectbox(
                 label="Select Date Column",
                 options=date_columns if len(date_columns) > 0 else ["Date"],
             )
-        min_date = df[date_col].min()
-        max_date = df[date_col].max()
+        # Select Date Range
+        min_date: datetime = df[date_col].min()
+        max_date: datetime = df[date_col].max()
+
         date_range = st.sidebar.date_input(
             label="Select Date Range",
             value=(min_date, max_date),
             min_value=min_date,
             max_value=max_date,
         )
-
+        # Filter data based on date range
         if isinstance(date_range, tuple) and len(date_range) == 2:
             df = df[
                 (df[date_col].dt.date >= date_range[0])
@@ -69,50 +74,53 @@ if uploaded_file is not None:
             ]
 
     # Main dashboard area using columns
-    col1, col2 = st.columns(2)
+    col1, col2 = st.columns(spec=2)
 
     with col1:
-        st.subheader("📈 Data Overview")
+        st.subheader(body="📈 Data Overview")
         index_range: pd.RangeIndex = pd.RangeIndex(start=1, stop=len(df) + 1, step=1)
         df.index = index_range
-        st.dataframe(df, use_container_width=True)
+        st.dataframe(data=df, use_container_width=True)
 
-        st.subheader("📊 Quick Statistics")
-        numeric_cols = df.select_dtypes(include=[np.number]).columns
-        selected_col = st.selectbox("Select column for statistics", numeric_cols)
+        st.subheader(body="📊 Quick Statistics")
+        numeric_cols: pd.Index = df.select_dtypes(include=[np.number]).columns
+        selected_col = st.selectbox(
+            label="Select column for statistics", options=numeric_cols
+        )
 
         # Display metrics
         metric_col1, metric_col2, metric_col3, metric_col4 = st.columns(4)
         with metric_col1:
-            st.metric("Mean", f"{df[selected_col].mean():.2f}")
+            st.metric(label="Mean", value=f"{df[selected_col].mean():.2f}")
         with metric_col2:
-            st.metric("Median", f"{df[selected_col].median():.2f}")
+            st.metric(label="Median", value=f"{df[selected_col].median():.2f}")
         with metric_col3:
-            st.metric("Std Dev", f"{df[selected_col].std():.2f}")
+            st.metric(label="Std Dev", value=f"{df[selected_col].std():.2f}")
         with metric_col4:
-            st.metric("Count", len(df))
+            st.metric(label="Count", value=len(df))
 
     with col2:
-        st.subheader("📉 Data Distribution")
+        st.subheader(body="📉 Data Distribution")
         plot_type = st.selectbox(
-            "Select Plot Type", ["Histogram", "Box Plot", "Scatter Plot", "Line Plot"]
+            label="Select Plot Type",
+            options=["Histogram", "Box Plot", "Scatter Plot", "Line Plot"],
         )
 
         if plot_type == "Histogram":
-            fig = px.histogram(df, x=selected_col)
+            fig: go.Figure = px.histogram(data_frame=df, x=selected_col)
         elif plot_type == "Box Plot":
-            fig = px.box(df, y=selected_col)
+            fig = px.box(data_frame=df, y=selected_col)
         elif plot_type == "Scatter Plot":
-            x_col = st.selectbox("Select X axis", numeric_cols)
-            y_col = st.selectbox("Select Y axis", numeric_cols)
-            fig = px.scatter(df, x=x_col, y=y_col)
+            x_col = st.selectbox(label="Select X axis", options=numeric_cols)
+            y_col = st.selectbox(label="Select Y axis", options=numeric_cols)
+            fig = px.scatter(data_frame=df, x=x_col, y=y_col)
         else:  # Line Plot
             if "Date" in df.columns:
-                fig = px.line(df, x="Date", y=selected_col)
+                fig = px.line(data_frame=df, x="Date", y=selected_col)
             else:
-                fig = px.line(df, y=selected_col)
+                fig = px.line(data_frame=df, y=selected_col)
 
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(figure_or_data=fig, use_container_width=True)
 
     # Advanced Analysis Section
     st.subheader("🔍 Advanced Analysis")
