@@ -12,36 +12,42 @@
     line-height: 1.6;
 }
 
-h1 {  /* st.title() */
+h1 {
+    /* st.title() */
     color: #0f2b46;
     font-size: 2.5rem;
     font-weight: 700;
 }
 
-h2 {  /* st.header() */
+h2 {
+    /* st.header() */
     color: #1a4971;
     font-size: 2rem;
 }
 
-h3 {  /* st.subheader() */
+h3 {
+    /* st.subheader() */
     color: #2c5282;
     font-size: 1.5rem;
 }
 
-.stCodeBlock {  /* st.code() */
+.stCodeBlock {
+    /* st.code() */
     background-color: #f6f8fa;
     padding: 1rem;
     border-radius: 5px;
     font-family: 'Courier New', monospace;
 }
 
-.stCaption {  /* st.caption() */
+.stCaption {
+    /* st.caption() */
     color: #718096;
     font-size: 0.875rem;
 }
 
 /* 3. Input Widgets */
-.stTextInput input {  /* st.text_input() */
+.stTextInput input {
+    /* st.text_input() */
     border: 2px solid #e2e8f0;
     border-radius: 5px;
     padding: 0.5rem;
@@ -53,38 +59,44 @@ h3 {  /* st.subheader() */
     box-shadow: 0 0 0 1px #4299e1;
 }
 
-.stNumberInput input {  /* st.number_input() */
+.stNumberInput input {
+    /* st.number_input() */
     border: 2px solid #e2e8f0;
     border-radius: 5px;
     padding: 0.5rem;
 }
 
-.stTextArea textarea {  /* st.text_area() */
+.stTextArea textarea {
+    /* st.text_area() */
     border: 2px solid #e2e8f0;
     border-radius: 5px;
     padding: 0.5rem;
     min-height: 100px;
 }
 
-.stDateInput input {  /* st.date_input() */
+.stDateInput input {
+    /* st.date_input() */
     border: 2px solid #e2e8f0;
     border-radius: 5px;
     padding: 0.5rem;
 }
 
-.stFileUploader {  /* st.file_uploader() */
+.stFileUploader {
+    /* st.file_uploader() */
     border: 2px dashed #e2e8f0;
     border-radius: 5px;
     padding: 1rem;
 }
 
-.stColorPicker {  /* st.color_picker() */
+.stColorPicker {
+    /* st.color_picker() */
     border-radius: 5px;
     overflow: hidden;
 }
 
 /* 4. Button Elements */
-.stButton button {  /* st.button() */
+.stButton button {
+    /* st.button() */
     background-color: #4299e1;
     color: white;
     border: none;
@@ -99,7 +111,8 @@ h3 {  /* st.subheader() */
     transform: translateY(-1px);
 }
 
-.stDownloadButton button {  /* st.download_button() */
+.stDownloadButton button {
+    /* st.download_button() */
     background-color: #48bb78;
     color: white;
     border: none;
@@ -107,47 +120,56 @@ h3 {  /* st.subheader() */
     padding: 0.5rem 1rem;
 }
 
-.stCheckbox {  /* st.checkbox() */
+.stCheckbox {
+    /* st.checkbox() */
     margin: 0.5rem 0;
 }
 
-.stRadio {  /* st.radio() */
+.stRadio {
+    /* st.radio() */
     margin: 0.5rem 0;
 }
 
-.stSelectbox {  /* st.selectbox() */
+.stSelectbox {
+    /* st.selectbox() */
     border: 2px solid #e2e8f0;
     border-radius: 5px;
 }
 
-.stMultiSelect {  /* st.multiselect() */
+.stMultiSelect {
+    /* st.multiselect() */
     border: 2px solid #e2e8f0;
     border-radius: 5px;
 }
 
 /* 5. Layout Elements */
-.stSidebar {  /* st.sidebar */
+.stSidebar {
+    /* st.sidebar */
     background-color: #f7fafc;
     padding: 2rem 1rem;
     border-right: 1px solid #e2e8f0;
 }
 
-.stColumns {  /* st.columns() */
+.stColumns {
+    /* st.columns() */
     gap: 1rem;
 }
 
-.stExpander {  /* st.expander() */
+.stExpander {
+    /* st.expander() */
     border: 1px solid #e2e8f0;
     border-radius: 5px;
     margin: 0.5rem 0;
 }
 
-.stContainer {  /* st.container() */
+.stContainer {
+    /* st.container() */
     padding: 1rem;
     margin: 1rem 0;
 }
 
-.stTabs {  /* st.tabs() */
+.stTabs {
+    /* st.tabs() */
     margin: 1rem 0;
 }
 
@@ -161,46 +183,54 @@ h3 {  /* st.subheader() */
 }
 
 /* 6. Media Elements */
-.stImage {  /* st.image() */
+.stImage {
+    /* st.image() */
     border-radius: 5px;
     overflow: hidden;
 }
 
-.stVideo {  /* st.video() */
+.stVideo {
+    /* st.video() */
     border-radius: 5px;
     overflow: hidden;
 }
 
-.stAudio {  /* st.audio() */
+.stAudio {
+    /* st.audio() */
     width: 100%;
     margin: 1rem 0;
 }
 
 /* 7. Data Display */
-.stDataFrame {  /* st.dataframe() */
+.stDataFrame {
+    /* st.dataframe() */
     border: 1px solid #e2e8f0;
     border-radius: 5px;
     overflow: hidden;
 }
 
-.stTable {  /* st.table() */
+.stTable {
+    /* st.table() */
     border-collapse: collapse;
     width: 100%;
 }
 
-.stTable th, .stTable td {
+.stTable th,
+.stTable td {
     border: 1px solid #e2e8f0;
     padding: 0.5rem;
 }
 
-.stMetric {  /* st.metric() */
+.stMetric {
+    /* st.metric() */
     background-color: white;
     padding: 1rem;
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.stJson {  /* st.json() */
+.stJson {
+    /* st.json() */
     background-color: #f6f8fa;
     padding: 1rem;
     border-radius: 5px;
@@ -208,43 +238,49 @@ h3 {  /* st.subheader() */
 }
 
 /* 8. Status Elements */
-.stAlert {  /* Base for all alerts */
+.stAlert {
+    /* Base for all alerts */
     padding: 1rem;
     border-radius: 5px;
     margin: 1rem 0;
 }
 
-.stError {  /* st.error() */
+.stError {
+    /* st.error() */
     background-color: #fff5f5;
     border: 1px solid #fc8181;
     color: #c53030;
 }
 
-.stWarning {  /* st.warning() */
+.stWarning {
+    /* st.warning() */
     background-color: #fffaf0;
     border: 1px solid #fbd38d;
     color: #c05621;
 }
 
-.stInfo {  /* st.info() */
+.stInfo {
+    /* st.info() */
     background-color: #ebf8ff;
     border: 1px solid #63b3ed;
     color: #2b6cb0;
 }
 
-.stSuccess {  /* st.success() */
+.stSuccess {
+    /* st.success() */
     background-color: #f0fff4;
     border: 1px solid #68d391;
     color: #2f855a;
 }
 
-.stProgress {  /* st.progress() */
+.stProgress {
+    /* st.progress() */
     height: 0.5rem;
     border-radius: 9999px;
     background-color: #e2e8f0;
 }
 
-.stProgress > div {
+.stProgress>div {
     background-color: #4299e1;
     border-radius: 9999px;
 }
