@@ -1,4 +1,4 @@
-from typing import Any, Union, Tuple
+from typing import Any, Sequence, Union, Tuple, cast, List
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -7,7 +7,7 @@ from datetime import date, datetime
 import numpy as np
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from streamlit.delta_generator import DeltaGenerator
-
+from pandas.core.groupby import DataFrameGroupBy
 
 # Set page config
 st.set_page_config(page_title="Advanced Data Dashboard", page_icon="📊", layout="wide")
@@ -74,9 +74,8 @@ if uploaded_file is not None:
             ]
 
     # Main dashboard area using columns
-    col1, col2 = st.columns(spec=2)
-
-    with col1:
+    col: List[DeltaGenerator] = st.columns(spec=2)
+    with col[0]:
         st.subheader(body="📈 Data Overview")
         index_range: pd.RangeIndex = pd.RangeIndex(start=1, stop=len(df) + 1, step=1)
         df.index = index_range
@@ -84,112 +83,140 @@ if uploaded_file is not None:
 
         st.subheader(body="📊 Quick Statistics")
         numeric_cols: pd.Index = df.select_dtypes(include=[np.number]).columns
-        selected_col = st.selectbox(
+        selected_col: str | None = st.selectbox(
             label="Select column for statistics", options=numeric_cols
         )
 
         # Display metrics
-        metric_col1, metric_col2, metric_col3, metric_col4 = st.columns(4)
-        with metric_col1:
+        metric_col: List[DeltaGenerator] = st.columns(spec=4)
+        with metric_col[0]:
             st.metric(label="Mean", value=f"{df[selected_col].mean():.2f}")
-        with metric_col2:
+        with metric_col[1]:
             st.metric(label="Median", value=f"{df[selected_col].median():.2f}")
-        with metric_col3:
+        with metric_col[2]:
             st.metric(label="Std Dev", value=f"{df[selected_col].std():.2f}")
-        with metric_col4:
+        with metric_col[3]:
             st.metric(label="Count", value=len(df))
 
-    with col2:
+    with col[1]:
         st.subheader(body="📉 Data Distribution")
-        plot_type = st.selectbox(
+        plot_type: str | None = st.selectbox(
             label="Select Plot Type",
             options=["Histogram", "Box Plot", "Scatter Plot", "Line Plot"],
         )
 
-        if plot_type == "Histogram":
-            fig: go.Figure = px.histogram(data_frame=df, x=selected_col)
-        elif plot_type == "Box Plot":
-            fig = px.box(data_frame=df, y=selected_col)
-        elif plot_type == "Scatter Plot":
-            x_col = st.selectbox(label="Select X axis", options=numeric_cols)
-            y_col = st.selectbox(label="Select Y axis", options=numeric_cols)
-            fig = px.scatter(data_frame=df, x=x_col, y=y_col)
-        else:  # Line Plot
-            if "Date" in df.columns:
-                fig = px.line(data_frame=df, x="Date", y=selected_col)
-            else:
-                fig = px.line(data_frame=df, y=selected_col)
+        match plot_type:
+            case "Histogram":
+                fig: go.Figure = px.histogram(data_frame=df, x=selected_col)
+            case "Box Plot":
+                fig = px.box(data_frame=df, y=selected_col)
+            case "Scatter Plot":
+                x_col: str | None = st.selectbox(
+                    label="Select X axis", options=numeric_cols
+                )
+                y_col: str | None = st.selectbox(
+                    label="Select Y axis", options=numeric_cols
+                )
+                fig = px.scatter(data_frame=df, x=x_col, y=y_col)
+            case "Line Plot":
+                if "Date" in df.columns:
+                    fig = px.line(data_frame=df, x="Date", y=selected_col)
+                else:
+                    fig = px.line(data_frame=df, y=selected_col)
+            case _:
+                raise ValueError(f"Unsupported plot type: {plot_type}")
 
         st.plotly_chart(figure_or_data=fig, use_container_width=True)
 
     # Advanced Analysis Section
-    st.subheader("🔍 Advanced Analysis")
-    analysis_tabs = st.tabs(["Correlation Matrix", "Group Analysis", "Trend Analysis"])
+    st.subheader(body="🔍 Advanced Analysis")
+    analysis_tabs: Sequence[DeltaGenerator] = st.tabs(
+        tabs=["Correlation Matrix", "Group Analysis", "Trend Analysis"]
+    )
 
     with analysis_tabs[0]:
         # Correlation Matrix
-        numeric_df = df.select_dtypes(include=[np.number])
-        corr_matrix = numeric_df.corr()
+        numeric_df: pd.DataFrame = df.select_dtypes(include=[np.number])
+        corr_matrix: pd.DataFrame = numeric_df.corr()
         fig = px.imshow(
-            corr_matrix, title="Correlation Matrix", color_continuous_scale="RdBu"
+            img=corr_matrix, title="Correlation Matrix", color_continuous_scale="RdBu"
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(figure_or_data=fig, use_container_width=True)
 
     with analysis_tabs[1]:
         # Group Analysis
-        categorical_cols = df.select_dtypes(include=["object"]).columns
+        categorical_cols: pd.Index = df.select_dtypes(include=["object"]).columns
         if len(categorical_cols) > 0:
-            group_col = st.selectbox("Group by", categorical_cols)
-            agg_col = st.selectbox("Aggregate column", numeric_cols)
-            agg_func = st.selectbox("Aggregation function", ["mean", "sum", "count"])
 
-            grouped_data = df.groupby(group_col)[agg_col].agg(agg_func).reset_index()
+            # Select group and aggregation columns
+            group_col: str | None = st.selectbox(
+                label="Group by", options=categorical_cols
+            )
+            agg_col: str | None = st.selectbox(
+                label="Aggregate column", options=numeric_cols
+            )
+            agg_func: str | None = cast(
+                str,
+                st.selectbox(
+                    label="Aggregation function", options=["mean", "sum", "count"]
+                ),
+            )
+
+            # Perform groupby and aggregation
+            grouped_data: pd.DataFrame = (
+                df.groupby(by=group_col)[[agg_col]].agg(func=agg_func).reset_index()
+            )
+
+            # Plot the grouped data
             fig = px.bar(
-                grouped_data,
+                data_frame=grouped_data,
                 x=group_col,
                 y=agg_col,
                 title=f"{agg_func.capitalize()} of {agg_col} by {group_col}",
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(figure_or_data=fig, use_container_width=True)
 
     with analysis_tabs[2]:
         # Trend Analysis
         if "Date" in df.columns:
-            trend_col = st.selectbox("Select column for trend analysis", numeric_cols)
-            trend_period = st.selectbox(
-                "Select trend period", ["Daily", "Weekly", "Monthly"]
+            trend_col: Any | None = st.selectbox(
+                label="Select column for trend analysis", options=numeric_cols
+            )
+            trend_period: str | None = st.selectbox(
+                label="Select trend period", options=["Daily", "Weekly", "Monthly"]
             )
 
             if trend_period == "Daily":
-                trend_data = df.groupby("Date")[trend_col].mean().reset_index()
+                trend_data: pd.DataFrame = (
+                    df.groupby(by="Date")[[trend_col]].mean().reset_index()
+                )
             elif trend_period == "Weekly":
                 trend_data = (
-                    df.groupby(pd.Grouper(key="Date", freq="W"))[trend_col]
+                    df.groupby(by=pd.Grouper(key="Date", freq="W"))[[trend_col]]
                     .mean()
                     .reset_index()
                 )
             else:
                 trend_data = (
-                    df.groupby(pd.Grouper(key="Date", freq="M"))[trend_col]
+                    df.groupby(by=pd.Grouper(key="Date", freq="M"))[[trend_col]]
                     .mean()
                     .reset_index()
                 )
 
             fig = px.line(
-                trend_data,
+                data_frame=trend_data,
                 x="Date",
                 y=trend_col,
                 title=f"{trend_period} Trend of {trend_col}",
             )
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(figure_or_data=fig, use_container_width=True)
 
     # Export options
-    st.subheader("📥 Export Options")
-    col1, col2 = st.columns(2)
-
-    with col1:
-        if st.button("Export to CSV"):
-            csv = df.to_csv(index=False)
+    st.subheader(body="📥 Export Options")
+    exp_opt_col: List[DeltaGenerator] = st.columns(spec=2)
+    with exp_opt_col[0]:
+        if st.button(label="Export to CSV"):
+            csv: str | None = df.to_csv(index=False)
             st.download_button(
                 label="Download CSV",
                 data=csv,
@@ -197,10 +224,10 @@ if uploaded_file is not None:
                 mime="text/csv",
             )
 
-    with col2:
-        if st.button("Export to Excel"):
-            df.to_excel("dashboard_export.xlsx", index=False)
-            with open("dashboard_export.xlsx", "rb") as f:
+    with exp_opt_col[1]:
+        if st.button(label="Export to Excel"):
+            df.to_excel(excel_writer="dashboard_export.xlsx", index=False)
+            with open(file="dashboard_export.xlsx", mode="rb") as f:
                 st.download_button(
                     label="Download Excel",
                     data=f,
@@ -209,7 +236,7 @@ if uploaded_file is not None:
                 )
 
 else:
-    st.info("Please upload a CSV file to begin analysis.")
+    st.info(body="Please upload a CSV file to begin analysis.")
 
     # Sample data preview
     st.subheader(body="📋 Sample Data Format")
