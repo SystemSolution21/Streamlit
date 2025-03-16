@@ -1,0 +1,21 @@
+StreamlitApp/
+├── app.py
+├── pages/
+│   ├── llm_examples/
+│   └── tutorial/
+├── docs/
+│   ├── README.md              # Documentation home
+│   ├── getting_started.md     # Setup and installation
+│   ├── tutorials/
+│   │   ├── basic_app.md      # Basic Streamlit concepts
+│   │   ├── llm_chat.md       # LLM chat tutorial
+│   │   └── dashboard.md      # Dashboard tutorial
+│   ├── api/                   # API documentation
+│   ├── examples/              # Code examples
+│   └── assets/               # Images, diagrams, etc.
+│       └── screenshots/
+├── data/
+├── utils/
+├── tests/
+├── pyproject.toml
+└── README.md                  # Project root README

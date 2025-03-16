@@ -4,6 +4,7 @@ version = "0.1.0"
 description = ""
 authors = ["Your Name <you@example.com>"]
 readme = "README.md"
+package-mode = false  # ← Best for tutorial projects
 
 [tool.poetry.dependencies]
 python = "^3.12"
@@ -12,6 +13,7 @@ matplotlib = "^3.9.2"
 streamlit = "^1.37.1"
 plotly = "^6.0.0"
 openpyxl = "^3.1.5"
+ollama = "^0.1.6"
 
 
 [build-system]
