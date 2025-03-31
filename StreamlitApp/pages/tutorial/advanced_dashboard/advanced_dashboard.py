@@ -8,32 +8,30 @@ import numpy as np
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 from streamlit.delta_generator import DeltaGenerator
 from pandas.core.groupby import DataFrameGroupBy
+import os
+from pathlib import Path
 
 # Set page config
 st.set_page_config(page_title="Advanced Data Dashboard", page_icon="📊", layout="wide")
 
-# Add custom CSS
-st.markdown(
-    body="""
-    <style>
-    .main {
-        padding: 0rem 1rem;
-    }
-    .stMetric {
-        background-color: #f0f2f6;
-        padding: 10px;
-        border-radius: 10px;
-    }
-    </style>
-""",
-    unsafe_allow_html=True,
-)
+# Get the current file's directory
+current_dir: Path = Path(__file__).parent
+
+
+# Load CSS
+def load_css(css_file) -> None:
+    with open(file=current_dir / css_file) as f:
+        st.markdown(body=f"<style>{f.read()}</style>", unsafe_allow_html=True)
+
+
+# Load the CSS file
+load_css(css_file="styles/dashboard.css")
 
 # Title and description
 st.title(body="📊 Advanced Data Dashboard")
 st.markdown(body="Upload your CSV file to analyze and visualize your data.")
 
-# File upload
+# Upload CSV data file
 uploaded_file: UploadedFile | None = st.file_uploader(
     label="Choose a CSV file", type="csv"
 )
@@ -87,7 +85,7 @@ if uploaded_file is not None:
             label="Select column for statistics", options=numeric_cols
         )
 
-        # Display metrics
+        # Display metrics in columns
         metric_col: List[DeltaGenerator] = st.columns(spec=4)
         with metric_col[0]:
             st.metric(label="Mean", value=f"{df[selected_col].mean():.2f}")
