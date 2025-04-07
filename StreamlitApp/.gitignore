@@ -1,2 +1,5 @@
 # Poetry Lock File
 poetry.lock
+
+# Python cache
+__pycache__/
