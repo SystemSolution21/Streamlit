@@ -3,3 +3,9 @@ poetry.lock
 
 # Python cache
 __pycache__/
+
+# Poetry lock
+poetry.lock
+
+# Requirements
+requirements.txt
