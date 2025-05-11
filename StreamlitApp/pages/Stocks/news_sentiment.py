@@ -4,35 +4,19 @@ from pydantic import BaseModel
 import pandas as pd
 from gnews import GNews
 import streamlit as st
-import yfinance as yf
 
 
-# Set page config
-st.set_page_config(page_title="Financial News Sentiment Analysis", page_icon="📈")
-st.title(body="Financial News Sentiment Analysis")
-
-
-# Define Structured Output for financial news sentiment analysis
+# Define Structured Output for stock news sentiment analysis
 class FinancialSentimentAnalysis(BaseModel):
-    """Structured Output for financial sentiment news analysis."""
+    """Structured Output for stock sentiment news analysis."""
 
     sentiment: str
     future_looking: bool
 
 
-# Get S&P 500 symbols using yfinance
-def get_sp500_symbols() -> dict[Any, Any]:
-    """Get S&P 500 symbols using yfinance."""
-
-    sp500: pd.DataFrame = pd.read_html(
-        io="https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
-    )[0]
-    return dict(zip(sp500["Security"], sp500["Symbol"]))
-
-
 # Financial news sentiment analysis using llm
-def analyze_stock_news(symbol) -> pd.DataFrame:
-    """Financial news sentiment analysis using llm."""
+def analyze_stock_news(symbol: str):
+    """Stock news sentiment analysis using llm."""
 
     # Fetch news articles
     google_news: GNews = GNews()
@@ -51,10 +35,6 @@ def analyze_stock_news(symbol) -> pd.DataFrame:
     # Initialize response store result
     results: list[dict[str, Any]] = []
 
-    # Create llm to analyze news articles
-    # model: str = "deepseek-r1:14b"
-    # model: str = "llama3.2:3b"
-    # model: str = "openthinker:7b"
     model: str = "gemma3:4b"
 
     for title in news_titles:
@@ -98,9 +78,6 @@ def analyze_stock_news(symbol) -> pd.DataFrame:
             )
         )
 
-        # For debugging, display the response content
-        st.write(f"Raw response for '{title}': {response}")
-
         # Store the results as structured data
         results.append(
             {
@@ -111,40 +88,20 @@ def analyze_stock_news(symbol) -> pd.DataFrame:
         )
 
     # Converts the results to DataFrame
-    df: pd.DataFrame = pd.DataFrame(data=results)
-    return df
+    df_news: pd.DataFrame = pd.DataFrame(data=results)
+    index_range: pd.RangeIndex = pd.RangeIndex(start=1, stop=len(df_news) + 1, step=1)
+    df_news.index = index_range
 
+    # Display results
+    st.subheader(body="AI Stock News Sentiment Analysis Results")
+    st.dataframe(data=df_news)
 
-def main() -> None:
+    # Display summary statistics
+    positive_count: int = len(df_news[df_news["sentiment"] == "positive"])
+    negative_count: int = len(df_news[df_news["sentiment"] == "negative"])
+    neutral_count: int = len(df_news[df_news["sentiment"] == "neutral"])
 
-    # Get stock symbols and create dropdown
-    stocks: Dict[Any, Any] = get_sp500_symbols()
-    selected_company: Any | None = st.selectbox(
-        label="Select a company",
-        options=list(stocks.keys()),
-        format_func=lambda x: f"{x} ({stocks[x]})",
-    )
-
-    if selected_company:
-        symbol: str = stocks[selected_company]
-        if st.button(label=f"Analyze {symbol} News"):
-            with st.spinner(text=f"Analyzing news for {selected_company}..."):
-                df: pd.DataFrame = analyze_stock_news(symbol=symbol)
-
-                # Display results
-                st.subheader(body="Sentiment Analysis Results")
-                st.dataframe(data=df)
-
-                # Display summary statistics
-                positive_count: int = len(df[df["sentiment"] == "positive"])
-                negative_count: int = len(df[df["sentiment"] == "negative"])
-                neutral_count: int = len(df[df["sentiment"] == "neutral"])
-
-                col1, col2, col3 = st.columns(3)
-                col1.metric(label="Positive", value=positive_count)
-                col2.metric(label="Negative", value=negative_count)
-                col3.metric(label="Neutral", value=neutral_count)
-
-
-if __name__ == "__main__":
-    main()
+    col1, col2, col3 = st.columns(3)
+    col1.metric(label="Positive", value=positive_count)
+    col2.metric(label="Negative", value=negative_count)
+    col3.metric(label="Neutral", value=neutral_count)

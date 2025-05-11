@@ -1,0 +1,41 @@
+.main {
+    padding: 0rem 1rem;
+}
+
+.stMetric {
+    background-color: #718096;
+    padding: 10px;
+    border-radius: 10px;
+    color: white;
+}
+
+/* Target every possible div in the metric label hierarchy */
+[data-testid="stMetricLabel"] div {
+    display: flex !important;
+    justify-content: center !important;
+    width: 100% !important;
+}
+
+/* Target the actual text element */
+[data-testid="stMetricLabel"] p {
+    text-align: center !important;
+    width: 100% !important;
+}
+
+/* Ensure the value is also centered */
+[data-testid="stMetricValue"] div {
+    display: flex !important;
+    justify-content: center !important;
+    font-size: large !important;
+    width: 100% !important;
+}
+
+/* Remove any default styles that might interfere */
+[data-testid="stMetricLabel"],
+[data-testid="stMetricValue"] {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+}
