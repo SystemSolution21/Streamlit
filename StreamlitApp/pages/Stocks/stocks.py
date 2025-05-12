@@ -78,13 +78,15 @@ if data_source == "Upload Stock CSV/Excel":
     )
 
     if uploaded_file is not None:
-        # Load data
-        if uploaded_file.name.endswith(".csv"):
-            df = pd.read_csv(filepath_or_buffer=uploaded_file)
-        else:
-            df = pd.read_excel(io=uploaded_file)
+        try:
+            # Load data
+            if uploaded_file.name.endswith(".csv"):
+                df = pd.read_csv(filepath_or_buffer=uploaded_file)
+            elif uploaded_file.name.endswith(".xlsx"):
+                df = pd.read_excel(io=uploaded_file)
+        except Exception as e:
+            st.error(body=f"Error loading data: {e}")
 
-        # Select company dropdown
         # Extract company name and symbol from the filename
         file_name_without_ext: str = os.path.splitext(uploaded_file.name)[0]
 
@@ -118,6 +120,7 @@ if data_source == "Upload Stock CSV/Excel":
             {company_name: symbol} if company_name and symbol else {}
         )
 
+        # Display selected company
         selected_company: str = st.sidebar.selectbox(
             label="Select a company",
             options=list(stocks.keys()),
@@ -142,7 +145,9 @@ elif data_source == "Fetch Stock Data":
             # Fetch stock data
             with st.spinner(text="Fetching stock data..."):
                 df = fetch_stock_data(ticker=stocks[selected_company])
-                df = df.reset_index()  # Convert index to column for easier handling
+                df = (
+                    df.reset_index()
+                )  # Convert index to column (Index/Date/Close/Open/High/Low/Volume)
 
     except Exception as e:
         st.error(body=f"Error fetching stock data: {e}")
