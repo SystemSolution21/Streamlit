@@ -10,6 +10,7 @@ from streamlit.delta_generator import DeltaGenerator
 from pandas.core.groupby import DataFrameGroupBy
 import os
 from pathlib import Path
+import news_sentiment_openai
 import news_sentiment
 
 # Set page config
@@ -376,10 +377,56 @@ else:
     - Alphabet Inc. (Class A)(GOOGL).xlsx
     """
     )
+# Horizontal line
+st.sidebar.html(body="<hr>")
+# OpenAI API key
+with st.sidebar:
+    openai_api_key = st.text_input(
+        label="Better Analysis, OpenAI API Key", key="openai_api_key", type="password"
+    )
+
+# Select OpenAI model
+with st.sidebar:
+    openai_model = st.selectbox(
+        label="Select OpenAI Model",
+        options=[
+            "o4-mini-2025-04-16",
+            "gpt-4.1-nano-2025-04-14",
+            "o3-mini-2025-01-31",
+            "gpt-4o-mini-2024-07-18",
+        ],
+        index=0,
+    )
 
 # Stock news sentiment analysis
-if st.sidebar.button(label=f"Stock News Sentiment Analyze AI"):
-    with st.spinner(
-        text=f"AI Analyzing news sentiment for {selected_company} ({stocks[selected_company]})..."
-    ):
-        news_sentiment.analyze_stock_news(symbol=stocks[selected_company])
+if st.sidebar.button(
+    label=f"Stock News Sentiment Analyze AI",
+    help="Default locally installed Ollama gemma3:4b",
+):
+    try:
+        if selected_company:
+
+            with st.spinner(
+                text=f"AI Analyzing news sentiment for {selected_company} ({stocks[selected_company]})..."
+            ):
+                try:
+                    if openai_api_key and openai_model:
+                        # Use provided OpenAI API key and model
+                        news_sentiment_openai.analyze_stock_news(
+                            openai_api_key=openai_api_key,
+                            openai_model=openai_model,
+                            symbol=stocks[selected_company],
+                        )
+
+                    else:
+                        # Use default locally installed Ollama gemma3:4b
+                        news_sentiment.analyze_stock_news(
+                            symbol=stocks[selected_company]
+                        )
+
+                except Exception as e:
+                    st.error(body=f"Error analyzing stock news sentiment: {e}")
+    except NameError:
+        st.error(
+            body="Please upload a CSV/Excel file or fetch a stock data to analyze news sentiment."
+        )
