@@ -1,6 +1,7 @@
 from typing import Any, Iterator, Mapping, Dict, cast
 from ollama import chat
 from openai import OpenAI
+from openai.types.responses.parsed_response import ParsedResponse
 from pydantic import BaseModel
 import pandas as pd
 from gnews import GNews
@@ -38,12 +39,12 @@ def analyze_stock_news(openai_api_key: str, openai_model: str, symbol: str):
 
     # Initialize OpenAI client
     client = OpenAI(api_key=openai_api_key)
-    model = openai_model
+    model: str = openai_model
 
     for title in news_titles:
-        response = client.responses.create(
+        response: ParsedResponse[FinancialSentimentAnalysis] = client.responses.parse(
             model=model,
-            messages=[
+            input=[
                 {
                     "role": "system",
                     "content": """You are a financial analyst expert. When analyzing headlines:
@@ -69,26 +70,27 @@ def analyze_stock_news(openai_api_key: str, openai_model: str, symbol: str):
                 Respond in JSON format matching the FinancialSentimentAnalysis schema.""",
                 },
             ],
-            format=FinancialSentimentAnalysis.model_json_schema(),  # type: ignore
+            text_format=FinancialSentimentAnalysis,
         )
 
         # Parse the response into financial sentiment analysis model
-        # Cast response to Dict to satisfy type checker
-        response_dict: Dict[str, Any] = cast(Dict[str, Any], response)
-        financial_sentiment_analysis: FinancialSentimentAnalysis = (
-            FinancialSentimentAnalysis.model_validate_json(
-                json_data=response_dict["message"]["content"]
-            )
+        financial_sentiment_analysis: FinancialSentimentAnalysis | None = (
+            response.output_parsed
         )
 
-        # Store the results as structured data
-        results.append(
-            {
-                "title": title,
-                "sentiment": financial_sentiment_analysis.sentiment,
-                "future_looking": financial_sentiment_analysis.future_looking,
-            }
-        )
+        # Ensure the response is not None before accessing attributes
+        if financial_sentiment_analysis:
+
+            # Store the results as structured data
+            results.append(
+                {
+                    "title": title,
+                    "sentiment": financial_sentiment_analysis.sentiment,
+                    "future_looking": financial_sentiment_analysis.future_looking,
+                }
+            )
+        else:
+            st.warning(body=f"Unable to parse sentiment analysis for headline: {title}")
 
     # Converts the results to DataFrame
     df_news: pd.DataFrame = pd.DataFrame(data=results)

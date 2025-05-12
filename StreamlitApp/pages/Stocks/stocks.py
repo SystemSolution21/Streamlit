@@ -1,3 +1,5 @@
+import re
+from re import Match
 from typing import Any, Sequence, Union, Tuple, cast, List
 import streamlit as st
 import pandas as pd
@@ -28,7 +30,7 @@ def load_css(css_file) -> None:
 
 # Get S&P 500 symbols
 def get_sp500_symbols() -> dict[str, str]:
-    """Get S&P 500 symbols using yfinance."""
+    """Get S&P 500 symbols."""
     sp500: pd.DataFrame = pd.read_html(
         io="https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
     )[0]
@@ -387,7 +389,7 @@ with st.sidebar:
 
 # Select OpenAI model
 with st.sidebar:
-    openai_model = st.selectbox(
+    openai_model: str = st.selectbox(
         label="Select OpenAI Model",
         options=[
             "o4-mini-2025-04-16",
@@ -411,7 +413,8 @@ if st.sidebar.button(
             ):
                 try:
                     if openai_api_key and openai_model:
-                        # Use provided OpenAI API key and model
+
+                        # OpenAI API key and model
                         news_sentiment_openai.analyze_stock_news(
                             openai_api_key=openai_api_key,
                             openai_model=openai_model,
@@ -419,13 +422,26 @@ if st.sidebar.button(
                         )
 
                     else:
-                        # Use default locally installed Ollama gemma3:4b
+                        # Default locally installed Ollama gemma3:4b
                         news_sentiment.analyze_stock_news(
                             symbol=stocks[selected_company]
                         )
 
                 except Exception as e:
-                    st.error(body=f"Error analyzing stock news sentiment: {e}")
+                    error_message = str(object=e)
+                    # Handle OpenAI API key errors
+                    if (
+                        "invalid_api_key" in error_message
+                        or "Incorrect API key" in error_message
+                    ):
+                        message_match: Match[str] | None = re.search(
+                            pattern=r"'message':\s*'([^']*)'", string=error_message
+                        )
+                        if message_match:
+                            error_message: str = message_match.group(1)
+
+                    st.error(body=error_message)
+
     except NameError:
         st.error(
             body="Please upload a CSV/Excel file or fetch a stock data to analyze news sentiment."
