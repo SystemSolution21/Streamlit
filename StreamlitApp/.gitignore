@@ -9,3 +9,6 @@ poetry.lock
 
 # Requirements
 requirements.txt
+
+# vscode
+.vscode/

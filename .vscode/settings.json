@@ -2,5 +2,7 @@
   "terminal.integrated.copyOnSelection": true,
   "terminal.integrated.cursorBlinking": true,
   "terminal.integrated.cursorStyle": "line",
-  "terminal.integrated.allowChords": false
+  "terminal.integrated.allowChords": false,
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true
 }

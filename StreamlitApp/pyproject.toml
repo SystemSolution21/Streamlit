@@ -20,6 +20,9 @@ gnews = "^0.4.1"
 openai = "^1.78.0"
 
 
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.5"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

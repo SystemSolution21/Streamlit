@@ -16,7 +16,7 @@ import news_sentiment_openai
 import news_sentiment
 
 # Set page config
-st.set_page_config(page_title="Stocks-Dashboard", page_icon="📊", layout="wide")
+st.set_page_config(page_title="S&P 500 Stocks-Dashboard", page_icon="📊", layout="wide")
 
 # Get the current file's directory
 current_dir: Path = Path(__file__).parent
@@ -60,11 +60,11 @@ load_css(css_file="styles/dashboard.css")
 
 # Title and description
 st.title(body="📊 Stocks Visualize & Analyze News Sentiment")
-st.sidebar.header(body="S&P 500 Stocks")
+st.sidebar.header(body="S&P 500 Stocks Dashboard")
 
 # Data source selection
 data_source: str = st.sidebar.radio(
-    label="Upload a CSV/Excel file or fetch a stock to analyze and visualize data.",
+    label="Upload a Stock CSV/Excel file or Fetch Stock Data to analyze and visualize.",
     options=["Upload Stock CSV/Excel", "Fetch Stock Data"],
 )
 
@@ -119,9 +119,32 @@ if data_source == "Upload Stock CSV/Excel":
             # Fallback if pattern (...) at the end is not found
             company_name = file_name_without_ext.strip()
 
-        stocks: dict[str, str] = (
-            {company_name: symbol} if company_name and symbol else {}
-        )
+        # Check company name and symbol
+        if not company_name or not symbol:
+            st.error(
+                body=f"Invalid file name format. Should be in 'Company Name(SYMBOL).csv' format."
+            )
+            # Reset DataFrame to empty to prevent further processing
+            df = pd.DataFrame()
+            # Early return or continue to next iteration
+            st.stop()
+
+        # Validate that the file contains the expected columns for stock data
+        required_columns = ["Date", "Open", "High", "Low", "Close", "Volume"]
+        missing_columns = [col for col in required_columns if col not in df.columns]
+
+        if missing_columns:
+            st.error(
+                body=f"Invalid stock data format. Missing required columns: {', '.join(missing_columns)}. "
+                f"Please ensure your file contains all of these columns: {', '.join(required_columns)}."
+            )
+            # Reset DataFrame to empty to prevent further processing
+            df = pd.DataFrame()
+            # Early return
+            st.stop()
+
+        # Create stock dictionary for company name and symbol
+        stocks: dict[str, str] = {company_name: symbol}
 
         # Display selected company
         selected_company: str = st.sidebar.selectbox(
@@ -403,7 +426,7 @@ with st.sidebar:
 # Stock news sentiment analysis
 if st.sidebar.button(
     label=f"Stock News Sentiment Analyze AI",
-    help="Default locally installed Ollama gemma3:4b",
+    help="Default local install Ollama llm",
 ):
     try:
         if selected_company:
@@ -444,5 +467,34 @@ if st.sidebar.button(
 
     except NameError:
         st.error(
-            body="Please upload a CSV/Excel file or fetch a stock data to analyze news sentiment."
+            body="Please upload a S&P 500 stocks CSV/Excel file or Fetch S&P 500 stocks data to analyze news sentiment."
         )
+
+# Create some space before the footer
+st.markdown(body="<br><br>", unsafe_allow_html=True)
+
+# Add a footer with CSS to ensure it stays at the bottom
+footer_html = """
+<style>
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: #f8f9fa;
+    color: #6c757d;
+    text-align: center;
+    padding: 10px;
+    font-size: 0.8rem;
+    border-top: 1px solid #dee2e6;
+    z-index: 1000;
+}
+</style>
+<div class="footer">
+    <p>© 2025 SystemSolution21. All rights reserved. S&P 500 Stock Dashboard</p>
+</div>
+"""
+st.markdown(body=footer_html, unsafe_allow_html=True)
+
+# Add padding at the bottom to prevent content from being hidden behind the footer
+st.markdown(body="<div style='padding-bottom: 70px;'></div>", unsafe_allow_html=True)
