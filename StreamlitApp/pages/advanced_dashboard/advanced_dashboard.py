@@ -1,15 +1,14 @@
-from typing import Any, Sequence, Union, Tuple, cast, List
-import streamlit as st
+from datetime import datetime
+from pathlib import Path
+from typing import Any, List, Sequence, cast
+
+import numpy as np
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-from datetime import date, datetime
-import numpy as np
-from streamlit.runtime.uploaded_file_manager import UploadedFile
+import streamlit as st
 from streamlit.delta_generator import DeltaGenerator
-from pandas.core.groupby import DataFrameGroupBy
-import os
-from pathlib import Path
+from streamlit.runtime.uploaded_file_manager import UploadedFile
 
 # Set page config
 st.set_page_config(page_title="Advanced Data Dashboard", page_icon="📊", layout="wide")
@@ -67,8 +66,8 @@ if uploaded_file is not None:
         # Filter data based on date range
         if isinstance(date_range, tuple) and len(date_range) == 2:
             df = df[
-                (df[date_col].dt.date >= date_range[0])
-                & (df[date_col].dt.date <= date_range[1])
+                (df[date_col].dt.date >= date_range[0])  # type: ignore
+                & (df[date_col].dt.date <= date_range[1])  # type: ignore
             ]
 
     # Main dashboard area using columns
@@ -145,7 +144,6 @@ if uploaded_file is not None:
         # Group Analysis
         categorical_cols: pd.Index = df.select_dtypes(include=["object"]).columns
         if len(categorical_cols) > 0:
-
             # Select group and aggregation columns
             group_col: str | None = st.selectbox(
                 label="Group by", options=categorical_cols

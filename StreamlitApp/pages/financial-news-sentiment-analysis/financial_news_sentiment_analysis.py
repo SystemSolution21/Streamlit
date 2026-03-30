@@ -1,10 +1,10 @@
-from typing import Any, Iterator, Mapping, Dict, cast
+from typing import Any, Dict, Iterator, Mapping, cast
+
+import pandas as pd
+import streamlit as st
+from gnews import GNews
 from ollama import chat
 from pydantic import BaseModel
-import pandas as pd
-from gnews import GNews
-import streamlit as st
-
 
 # Set page config
 st.set_page_config(page_title="Financial News Sentiment Analysis", page_icon="📈")
@@ -24,7 +24,10 @@ def get_sp500_symbols() -> dict[Any, Any]:
     """Get S&P 500 symbols."""
 
     sp500: pd.DataFrame = pd.read_html(
-        io="https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
+        io="https://en.wikipedia.org/wiki/List_of_S%26P_500_companies",
+        storage_options={
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        },
     )[0]
     return dict(zip(sp500["Security"], sp500["Symbol"]))
 
@@ -115,7 +118,6 @@ def analyze_stock_news(symbol) -> pd.DataFrame:
 
 
 def main() -> None:
-
     # Get stock symbols and create dropdown
     stocks: Dict[Any, Any] = get_sp500_symbols()
     selected_company: Any | None = st.selectbox(
