@@ -55,61 +55,51 @@ StreamlitApp/
 
 ### 2.3 モデル設計
 
-- **Tenant モデル**
-  - `schema_name`：テナントのスキーマ名
-  - `name`：テナント名
-- **Domain モデル**
-  - `domain`：サブドメイン
-  - `tenant`：`Tenant` への外部キー
+- **データ構造化 (Pydantic)**: `FinancialSentimentAnalysis` クラスにより、LLM の出力を `sentiment` (極性) と `future_looking` (将来予測の有無) として厳密に定義。
+- **状態管理 (st.session_state)**: チャット履歴、ユーザー入力、アップロードされた一時データの永続化。
+- **プロンプトモデル**: 金融アナリストの役割を定義したシステムプロンプトの設計。
 
-### 2.4 初期データ設計
+### 2.4 初期データ・外部 API 連携設計
 
-`tenants.json` により、以下を自動生成する：
-
-- `public` テナント
-- `demo1` テナント
-- `demo2` テナント
+- **株価データ**: Stooq API を介した 5 年分の日次データの取得。
+- **市場構成**: Wikipedia からの S&P 500 銘柄リスト（シンボル、社名）の動的取得。
+- **ニュースソース**: GNews を用いた最新の金融ヘッドラインの取得。
 
 ### 2.5 API / アプリ設計
 
-- **Blog アプリ**：記事投稿・閲覧
-- **Tasks アプリ**：タスク管理
-- テナントごとに独立したデータを保持
+- **Stocks アプリ**: 可視化、統計解析、相関分析、トレンド分析の提供。
+- **LLM アプリ**: LangChain を用いた Web 検索連携、ファイルベースの Q&A。
+- **Sentiment AI**: OpenAI (クラウド) と Ollama (ローカル) の選択可能な解析エンジン。
 
 ## 3. 開発工程まとめ（要件定義 → 設計 → 実装 → テスト → 運用）
 
 ### 3.1 要件定義工程
 
-- マルチテナント方式の決定（schema 分離方式）
-- サブドメインルーティングの要件整理
-- テナントごとのアプリ提供要件の定義
+- 市場データ分析と AI 連携による投資判断補助の要件整理。
+- マルチページ構成による機能拡張性の確保。
+- ローカル LLM 利用によるプライバシー配慮の定義。
 
 ### 3.2 設計工程
 
-- `public` / `tenant` schema の役割設計
-- モデル設計（`Tenant` / `Domain`）
-- ディレクトリ構造の設計
-- Docker による環境設計
-- `tenants.json` による初期データ設計
+- インタラクティブな UI コンポーネント（Tabs, Columns, Metrics）の配置設計。
+- Pydantic を用いた LLM 出力フォーマットの設計。
+- カスタム CSS によるダッシュボードのスタイリング設計。
 
 ### 3.3 実装工程
 
-- `tenants` アプリの実装
-- `Blog` / `Tasks` アプリの実装
-- サブドメインルーティングの実装
-- `populate_db` コマンドの実装
-- Docker + PostgreSQL の構築
+- `stocks.py` での Plotly グラフィック実装。
+- OpenAI/Anthropic API および Ollama (gemma3) の統合。
+- CSV/Excel アップロードおよびデータエクスポート機能の実装。
+- 共通処理の `utils` モジュール化。
 
 ### 3.4 テスト工程
 
-- `tenants/tests.py` によるテナント作成テスト
-- `blog/tests.py` による Blog アプリの動作テスト
-- schema 切り替えテスト
-- データ分離テスト
+- Pytest を用いた S&P 500 シンボル取得ロジックの検証。
+- 株価データ取得 API の接続テスト。
+- 各種 LLM モデルからの構造化出力のパーステスト。
 
 ### 3.5 運用工程
 
-- Docker による DB 運用
-- `public` / `demo1` / `demo2` のテナント運用
-- `tenants.json` によるテナント追加
-- Django 管理画面での運用管理
+- Poetry による依存パッケージの厳密な管理。
+- Streamlit Community Cloud へのデプロイ環境の構築。
+- `st.secrets` による API キー情報の秘匿管理。
